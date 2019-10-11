@@ -17,7 +17,7 @@ internal class BaseViewModelTest {
         val testViewModel = givenATestViewModel()
 
         val testObserver = testViewModel.viewState().test()
-        testViewModel.bindIntents(Observable.just(TestIntent.First))
+        testViewModel.bindIntents(just(TestIntent.First))
 
         assertThat(testObserver.hasSubscription()).isTrue()
         assertThat(testObserver.valueCount()).isEqualTo(2)
@@ -30,9 +30,9 @@ internal class BaseViewModelTest {
         val testViewModel = givenATestViewModel()
 
         val testObserver = testViewModel.viewState().test()
-        testViewModel.bindIntents(Observable.merge(Observable.just(TestIntent.First),
-                                                   Observable.just(TestIntent.Second),
-                                                   Observable.just(TestIntent.First)))
+        testViewModel.bindIntents(Observable.merge(just(TestIntent.First),
+                                                   just(TestIntent.Second),
+                                                   just(TestIntent.First)))
 
         assertThat(testObserver.hasSubscription()).isTrue()
         assertThat(testObserver.valueCount()).isEqualTo(3)
@@ -46,7 +46,7 @@ internal class BaseViewModelTest {
         val testViewModel = givenATestViewModel()
 
         val testObserver = testViewModel.viewState().test()
-        testViewModel.bindIntents(Observable.merge(Observable.just(TestIntent.First), Observable.just(TestIntent.First)))
+        testViewModel.bindIntents(Observable.merge(just(TestIntent.First), just(TestIntent.First)))
 
         assertThat(testObserver.hasSubscription()).isTrue()
         assertThat(testObserver.valueCount()).isEqualTo(2)
@@ -59,7 +59,7 @@ internal class BaseViewModelTest {
         val testViewModel = givenATestViewModel()
 
         val testObserver = testViewModel.viewState().test()
-        testViewModel.bindIntents(Observable.merge(Observable.just(TestIntent.First), Observable.just(TestIntent.Second)))
+        testViewModel.bindIntents(Observable.merge(just(TestIntent.First), just(TestIntent.Second)))
 
         assertThat(testObserver.hasSubscription()).isTrue()
         assertThat(testObserver.valueCount()).isEqualTo(3)
@@ -73,7 +73,7 @@ internal class BaseViewModelTest {
         val testViewModel = givenATestViewModel()
 
         testViewModel.viewState().test()
-        testViewModel.bindIntents(Observable.just(TestIntent.First))
+        testViewModel.bindIntents(just(TestIntent.First))
 
         verify(testTracker).trackViewState(TestViewState.First)
     }
@@ -83,7 +83,7 @@ internal class BaseViewModelTest {
         val testViewModel = givenATestViewModel()
 
         testViewModel.viewState().test()
-        testViewModel.bindIntents(Observable.just(TestIntent.First))
+        testViewModel.bindIntents(just(TestIntent.First))
 
         verify(testTracker).trackIntent(TestIntent.First)
     }
