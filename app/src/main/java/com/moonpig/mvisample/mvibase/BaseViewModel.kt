@@ -1,13 +1,11 @@
 package com.moonpig.mvisample.mvibase
 
 import android.arch.lifecycle.ViewModel
-import com.moonpig.mvisample.domain.mvibase.BaseAction
-import com.moonpig.mvisample.domain.mvibase.BaseResult
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.subjects.PublishSubject
 
-abstract class BaseViewModel<I : BaseIntent, A : BaseAction, R : BaseResult, VS : BaseViewState>(
+abstract class BaseViewModel<I : BaseIntent, A, R, VS : BaseViewState>(
     private val resultFrom: (A) -> Observable<R>,
     private val tracker: BaseTracker<VS, I>
 ) :

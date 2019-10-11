@@ -1,7 +1,5 @@
 package com.moonpig.mvisample.mvibase
 
-import com.moonpig.mvisample.domain.mvibase.BaseAction
-import com.moonpig.mvisample.domain.mvibase.BaseResult
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import io.reactivex.Observable
@@ -134,12 +132,12 @@ sealed class TestIntent : BaseIntent {
     object Second : TestIntent()
 }
 
-sealed class TestAction : BaseAction {
+sealed class TestAction {
     object First : TestAction()
     object Second : TestAction()
 }
 
-sealed class TestResult : BaseResult {
+sealed class TestResult {
     object First : TestResult()
     object Second : TestResult()
 }
