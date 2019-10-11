@@ -23,10 +23,9 @@ internal class ProductDetailUseCaseTest {
                 .thenReturn(Observable.just(RepositoryState.GetProductDetail.InFlight,
                                             RepositoryState.GetProductDetail.Success(productDetail)))
 
-        val productDetailUseCase = ProductDetailUseCase(productDetailRepository)
+        val productDetailUseCase = ProductDetailUseCase.constructProductDetailResultFrom(productDetailRepository)
 
-        val testObserver =
-                productDetailUseCase.resultFrom(ProductDetailAction.LoadProductDetail(productId)).test()
+        val testObserver = productDetailUseCase(ProductDetailAction.LoadProductDetail(productId)).test()
 
         testObserver.assertValues(ProductDetailResult.GetProductDetail.InFlight,
                                   ProductDetailResult.GetProductDetail.Success(productDetail))
@@ -39,10 +38,10 @@ internal class ProductDetailUseCaseTest {
                 .thenReturn(Observable.just(RepositoryState.GetProductDetail.InFlight,
                                             RepositoryState.GetProductDetail.Error(throwable)))
 
-        val productDetailUseCase = ProductDetailUseCase(productDetailRepository)
+        val productDetailUseCase = ProductDetailUseCase.constructProductDetailResultFrom(productDetailRepository)
 
         val testObserver =
-                productDetailUseCase.resultFrom(ProductDetailAction.LoadProductDetail(productId)).test()
+                productDetailUseCase(ProductDetailAction.LoadProductDetail(productId)).test()
 
         testObserver.assertValues(ProductDetailResult.GetProductDetail.InFlight,
                                   ProductDetailResult.GetProductDetail.Error(throwable))
@@ -54,10 +53,9 @@ internal class ProductDetailUseCaseTest {
         whenever(productDetailRepository.addProductToBasket(addProductRequest))
                 .thenReturn(Observable.just(RepositoryState.AddProduct.InFlight,
                                             RepositoryState.AddProduct.Success))
-        val productDetailUseCase = ProductDetailUseCase(productDetailRepository)
+        val productDetailUseCase = ProductDetailUseCase.constructProductDetailResultFrom(productDetailRepository)
 
-        val testObserver = productDetailUseCase
-                .resultFrom(ProductDetailAction.AddProductToBasket(productId, quantity)).test()
+        val testObserver = productDetailUseCase(ProductDetailAction.AddProductToBasket(productId, quantity)).test()
 
         verify(productDetailRepository).addProductToBasket(addProductRequest)
         testObserver.assertValues(ProductDetailResult.AddProduct.InFlight,
@@ -70,10 +68,9 @@ internal class ProductDetailUseCaseTest {
         whenever(productDetailRepository.addProductToBasket(addProductRequest))
                 .thenReturn(Observable.just(RepositoryState.AddProduct.InFlight,
                                             RepositoryState.AddProduct.Error(throwable)))
-        val productDetailUseCase = ProductDetailUseCase(productDetailRepository)
+        val productDetailUseCase = ProductDetailUseCase.constructProductDetailResultFrom(productDetailRepository)
 
-        val testObserver = productDetailUseCase
-                .resultFrom(ProductDetailAction.AddProductToBasket(productId, quantity)).test()
+        val testObserver = productDetailUseCase(ProductDetailAction.AddProductToBasket(productId, quantity)).test()
 
         verify(productDetailRepository).addProductToBasket(addProductRequest)
         testObserver.assertValues(ProductDetailResult.AddProduct.InFlight,

@@ -1,35 +1,52 @@
 package com.moonpig.mvisample.domain.productdetail
 
-import com.moonpig.mvisample.domain.mvibase.BaseUseCase
 import io.reactivex.Observable
 
-class ProductDetailUseCase(private val productDetailRepository: ProductDetailRepository) :
-        BaseUseCase<ProductDetailAction, ProductDetailResult> {
+object ProductDetailUseCase {
 
-    override fun resultFrom(action: ProductDetailAction): Observable<ProductDetailResult> {
-        return when (action) {
-            is ProductDetailAction.LoadProductDetail -> getProductDetail(action.productId)
-            is ProductDetailAction.AddProductToBasket -> addProductToBasket(action.productId, action.quantity)
+    fun constructProductDetailResultFrom(repository: ProductDetailRepository): (action: ProductDetailAction) -> Observable<ProductDetailResult> =
+        { action ->
+            when (action) {
+                is ProductDetailAction.LoadProductDetail -> getProductDetail(
+                    repository,
+                    action.productId
+                )
+                is ProductDetailAction.AddProductToBasket -> addProductToBasket(
+                    repository,
+                    action.productId,
+                    action.quantity
+                )
+            }
         }
-    }
 
-    private fun getProductDetail(productId: String): Observable<ProductDetailResult> =
-            productDetailRepository.getProductDetails(productId)
-                    .map {
-                        when (it) {
-                            is RepositoryState.GetProductDetail.InFlight -> ProductDetailResult.GetProductDetail.InFlight
-                            is RepositoryState.GetProductDetail.Success -> ProductDetailResult.GetProductDetail.Success(it.productDetail)
-                            is RepositoryState.GetProductDetail.Error -> ProductDetailResult.GetProductDetail.Error(it.throwable)
-                        }
-                    }
+    private fun getProductDetail(
+        repository: ProductDetailRepository,
+        productId: String
+    ): Observable<ProductDetailResult> =
+        repository.getProductDetails(productId)
+            .map {
+                when (it) {
+                    is RepositoryState.GetProductDetail.InFlight -> ProductDetailResult.GetProductDetail.InFlight
+                    is RepositoryState.GetProductDetail.Success -> ProductDetailResult.GetProductDetail.Success(
+                        it.productDetail
+                    )
+                    is RepositoryState.GetProductDetail.Error -> ProductDetailResult.GetProductDetail.Error(
+                        it.throwable
+                    )
+                }
+            }
 
-    private fun addProductToBasket(productId: String, quantity: Int): Observable<ProductDetailResult> =
-            productDetailRepository.addProductToBasket(AddProductRequest(productId, quantity))
-                    .map {
-                        when (it) {
-                            is RepositoryState.AddProduct.InFlight -> ProductDetailResult.AddProduct.InFlight
-                            is RepositoryState.AddProduct.Success -> ProductDetailResult.AddProduct.Success
-                            is RepositoryState.AddProduct.Error -> ProductDetailResult.AddProduct.Error(it.throwable)
-                        }
-                    }
+    private fun addProductToBasket(
+        repository: ProductDetailRepository,
+        productId: String,
+        quantity: Int
+    ): Observable<ProductDetailResult> =
+        repository.addProductToBasket(AddProductRequest(productId, quantity))
+            .map {
+                when (it) {
+                    is RepositoryState.AddProduct.InFlight -> ProductDetailResult.AddProduct.InFlight
+                    is RepositoryState.AddProduct.Success -> ProductDetailResult.AddProduct.Success
+                    is RepositoryState.AddProduct.Error -> ProductDetailResult.AddProduct.Error(it.throwable)
+                }
+            }
 }

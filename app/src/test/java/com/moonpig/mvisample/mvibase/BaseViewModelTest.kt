@@ -2,18 +2,16 @@ package com.moonpig.mvisample.mvibase
 
 import com.moonpig.mvisample.domain.mvibase.BaseAction
 import com.moonpig.mvisample.domain.mvibase.BaseResult
-import com.moonpig.mvisample.domain.mvibase.BaseUseCase
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
+import io.reactivex.Observable.just
 import io.reactivex.ObservableTransformer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 internal class BaseViewModelTest {
 
-    private val testUseCase: BaseUseCase<TestAction, TestResult> = mock()
     private val testTracker: BaseTracker<TestViewState, TestIntent> = mock()
 
     @Test
@@ -92,16 +90,21 @@ internal class BaseViewModelTest {
         verify(testTracker).trackIntent(TestIntent.First)
     }
 
-    private fun givenATestViewModel(): TestViewModel {
-        whenever(testUseCase.resultFrom(TestAction.First)).thenReturn(Observable.just(TestResult.First))
-        whenever(testUseCase.resultFrom(TestAction.Second)).thenReturn(Observable.just(TestResult.Second))
-        return TestViewModel(testUseCase, testTracker)
-    }
+    private fun givenATestViewModel(): TestViewModel =
+        TestViewModel(
+            { action ->
+                when (action) {
+                    TestAction.First -> just(TestResult.First)
+                    TestAction.Second -> just(TestResult.Second)
+                }
+            },
+            testTracker
+        )
 }
 
-class TestViewModel(testUseCase: BaseUseCase<TestAction, TestResult>,
+class TestViewModel(testResultFrom: (TestAction) -> Observable<TestResult>,
                     testTracker: BaseTracker<TestViewState, TestIntent>) :
-        BaseViewModel<TestIntent, TestAction, TestResult, TestViewState>(testUseCase, testTracker) {
+        BaseViewModel<TestIntent, TestAction, TestResult, TestViewState>(testResultFrom, testTracker) {
 
     override fun intentFilter(): ObservableTransformer<TestIntent, TestIntent> =
             ObservableTransformer { observable ->

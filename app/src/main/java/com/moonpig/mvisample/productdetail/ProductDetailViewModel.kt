@@ -2,17 +2,17 @@ package com.moonpig.mvisample.productdetail
 
 import com.moonpig.mvisample.domain.productdetail.ProductDetailAction
 import com.moonpig.mvisample.domain.productdetail.ProductDetailResult
-import com.moonpig.mvisample.domain.productdetail.ProductDetailUseCase
 import com.moonpig.mvisample.mvibase.BaseIntent
 import com.moonpig.mvisample.mvibase.BaseViewModel
 import com.moonpig.mvisample.mvibase.Visibility
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 
-class ProductDetailViewModel(productDetailUseCase: ProductDetailUseCase,
+class ProductDetailViewModel(resultFrom: (ProductDetailAction) -> Observable<ProductDetailResult>,
                              productDetailTracker: ProductDetailTracker) :
-        BaseViewModel<ProductDetailIntent, ProductDetailAction, ProductDetailResult, ProductDetailScreenViewState>(productDetailUseCase,
-                                                                                                                   productDetailTracker) {
+        BaseViewModel<ProductDetailIntent, ProductDetailAction, ProductDetailResult, ProductDetailScreenViewState>(
+            resultFrom,
+            productDetailTracker) {
 
     override fun intentFilter(): ObservableTransformer<ProductDetailIntent, ProductDetailIntent> =
             ObservableTransformer { observable ->

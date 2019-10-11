@@ -1,18 +1,21 @@
 package com.moonpig.mvisample.di.productdetail
 
+import com.moonpig.mvisample.domain.productdetail.ProductDetailAction
 import com.moonpig.mvisample.domain.productdetail.ProductDetailRepository
+import com.moonpig.mvisample.domain.productdetail.ProductDetailResult
 import com.moonpig.mvisample.domain.productdetail.ProductDetailUseCase
 import com.moonpig.mvisample.productdetail.ProductDetailTracker
 import com.moonpig.mvisample.productdetail.ProductDetailViewModelFactory
 import dagger.Module
 import dagger.Provides
+import io.reactivex.Observable
 
 @Module
 class ProductDetailsModule {
 
     @Provides
-    fun provideProductDetailsUseCase(productDetailsRepository: ProductDetailRepository) =
-            ProductDetailUseCase(productDetailsRepository)
+    fun provideProductDetailsResultFrom(productDetailsRepository: ProductDetailRepository) =
+        ProductDetailUseCase.constructProductDetailResultFrom(productDetailsRepository)
 
     @Provides
     fun provideProductDetailTracker(): ProductDetailTracker =
@@ -20,8 +23,9 @@ class ProductDetailsModule {
 
     @Provides
     fun provideProductDetailsViewModelFactory(
-            productDetailsUseCase: ProductDetailUseCase,
-            productDetailTracker: ProductDetailTracker
-    ): ProductDetailViewModelFactory =
-            ProductDetailViewModelFactory(productDetailsUseCase, productDetailTracker)
+        productDetailsResultFrom: @JvmSuppressWildcards(true) (action: ProductDetailAction) -> Observable<ProductDetailResult>,
+        productDetailTracker: ProductDetailTracker
+    ): ProductDetailViewModelFactory {
+        return ProductDetailViewModelFactory(productDetailsResultFrom, productDetailTracker)
+    }
 }
